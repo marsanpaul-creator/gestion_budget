@@ -389,16 +389,38 @@ function exportPDF(){
     }
     const imgR=squareCapture(canvasR);
     const imgD=squareCapture(canvasD);
-    const cw=85,cs=70;
+    const cw=85,cs=60;
     doc.setFillColor(248,248,248);
     doc.roundedRect(margin,y,cw,cs+10,2,2,'F');
     doc.roundedRect(margin+cw+10,y,cw,cs+10,2,2,'F');
     doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(95,94,90);
     doc.text('Repartition des recettes',margin+4,y+5);
     doc.text('Repartition des depenses',margin+cw+14,y+5);
-    doc.addImage(imgR,'PNG',margin+8,y+8,cs,cs);
-    doc.addImage(imgD,'PNG',margin+cw+18,y+8,cs,cs);
-    y+=cs+18;
+    doc.addImage(imgR,'PNG',margin+12,y+8,cs-10,cs-10);
+    doc.addImage(imgD,'PNG',margin+cw+22,y+8,cs-10,cs-10);
+    y+=cs+12;
+
+    const recTotal=d.rec.reduce((a,b)=>a+b.value,0);
+    const dData=[...d.ess,...d.aut];
+    const depTotal=dData.reduce((a,b)=>a+b.value,0);
+    const sqSize=3;
+    function drawLegend(items,total,xStart){
+      let ly=y;
+      items.filter(i=>i.value>0).forEach((item,idx)=>{
+        const col=COLORS[idx%COLORS.length];
+        const rgb=parseInt(col.slice(1),16);
+        doc.setFillColor((rgb>>16)&255,(rgb>>8)&255,rgb&255);
+        doc.rect(xStart,ly-sqSize+0.5,sqSize,sqSize,'F');
+        doc.setFontSize(7);doc.setTextColor(60,60,58);
+        const pct=total>0?Math.round(item.value/total*100):0;
+        doc.text(item.label+' ('+pct+'%)',xStart+sqSize+1.5,ly);
+        ly+=4.5;
+      });
+      return ly;
+    }
+    const lyR=drawLegend(d.rec,recTotal,margin+2);
+    const lyD=drawLegend(dData,depTotal,margin+cw+12);
+    y=Math.max(lyR,lyD)+6;
   }
 
   doc.autoTable({
