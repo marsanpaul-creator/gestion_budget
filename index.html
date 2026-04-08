@@ -169,6 +169,7 @@ let chartR=null,chartD=null;
 
 function fmt(n){return Math.round(n).toLocaleString('fr-FR')+' €'}
 function fmtN(n){return Math.round(n)}
+function fmtP(n){const s=Math.round(n).toString();return s.replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' \u20ac'}
 function gv(el){return parseFloat(el.value)||0}
 
 function getRowData(containerId){
@@ -365,16 +366,31 @@ function exportPDF(){
   doc.setFontSize(13);doc.setFont('helvetica','bold');
   const soldeColor=d.solde>=0?[59,109,17]:[163,45,45];
   doc.setTextColor(26,26,24);
-  doc.text(Math.round(d.recTotal).toLocaleString('fr-FR')+' €',margin+4,y+13);
-  doc.text(Math.round(d.depTotal).toLocaleString('fr-FR')+' €',margin+65,y+13);
+  doc.text(fmtP(d.recTotal),margin+4,y+13);
+  doc.text(fmtP(d.depTotal),margin+65,y+13);
   doc.setTextColor(...soldeColor);
-  doc.text((d.solde>=0?'+':'')+Math.round(d.solde).toLocaleString('fr-FR')+' €',margin+126,y+13);
+  doc.text((d.solde>=0?'+':'')+fmtP(d.solde),margin+126,y+13);
   y+=26;
 
+  const canvasR=document.getElementById('chartR');
+  const canvasD=document.getElementById('chartD');
+  if(canvasR&&canvasD){
+    const imgR=canvasR.toDataURL('image/png');
+    const imgD=canvasD.toDataURL('image/png');
+    const cw=85,ch=55;
+    doc.setFillColor(255,255,255);
+    doc.roundedRect(margin,y,cw,ch+10,2,2,'F');
+    doc.roundedRect(margin+cw+10,y,cw,ch+10,2,2,'F');
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(95,94,90);
+    doc.text('Repartition des recettes',margin+4,y+5);
+    doc.text('Repartition des depenses',margin+cw+14,y+5);
+    doc.addImage(imgR,'PNG',margin+5,y+7,cw-10,ch);
+    doc.addImage(imgD,'PNG',margin+cw+15,y+7,cw-10,ch);
+    y+=ch+18;
+  }
+
   doc.autoTable({
-    startY:y,margin:{left:margin,right:margin},
-    head:[['Recettes','Montant mensuel']],
-    body:[...d.rec.map(r=>[r.label,Math.round(r.value).toLocaleString('fr-FR')+' €']),['Total recettes',Math.round(d.recTotal).toLocaleString('fr-FR')+' €']],
+    body:[...d.rec.map(r=>[r.label,fmtP(r.value)]),['Total recettes',fmtP(d.recTotal)]],
     headStyles:{fillColor:[55,138,221],textColor:255,fontStyle:'bold',fontSize:9},
     bodyStyles:{fontSize:9},
     alternateRowStyles:{fillColor:[240,248,255]},
@@ -385,7 +401,7 @@ function exportPDF(){
   doc.autoTable({
     startY:y,margin:{left:margin,right:margin},
     head:[['Dépenses','Montant mensuel','Type']],
-    body:[...d.ess.map(r=>[r.label,Math.round(r.value).toLocaleString('fr-FR')+' €','Essentielle']),...d.aut.map(r=>[r.label,Math.round(r.value).toLocaleString('fr-FR')+' €','Autre']),['Total dépenses',Math.round(d.depTotal).toLocaleString('fr-FR')+' €','']],
+    body:[...d.ess.map(r=>[r.label,fmtP(r.value),'Essentielle']),...d.aut.map(r=>[r.label,fmtP(r.value),'Autre']),['Total dépenses',fmtP(d.depTotal),'']],
     headStyles:{fillColor:[216,90,48],textColor:255,fontStyle:'bold',fontSize:9},
     bodyStyles:{fontSize:9},
     alternateRowStyles:{fillColor:[255,245,240]},
@@ -398,7 +414,7 @@ function exportPDF(){
   doc.autoTable({
     startY:y,margin:{left:margin,right:margin},
     head:[['Livret','Solde','Taux','Intérêts/an']],
-    body:[...d.ep.map(e=>[e.label,Math.round(e.solde).toLocaleString('fr-FR')+' €',e.taux.toFixed(2)+' %',Math.round(e.interets).toLocaleString('fr-FR')+' €']),['Total',Math.round(d.epTotal).toLocaleString('fr-FR')+' €','',Math.round(d.intTotal).toLocaleString('fr-FR')+' €']],
+    body:[...d.ep.map(e=>[e.label,fmtP(e.solde),e.taux.toFixed(2)+' %',fmtP(e.interets)]),['Total',fmtP(d.epTotal),'',fmtP(d.intTotal)]],
     headStyles:{fillColor:[59,109,17],textColor:255,fontStyle:'bold',fontSize:9},
     bodyStyles:{fontSize:9},
     alternateRowStyles:{fillColor:[240,248,240]},
@@ -409,7 +425,7 @@ function exportPDF(){
   const obj=d.salaire*6;
   const pct=obj>0?Math.min(Math.round(d.epTotal/obj*100),100):0;
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(95,94,90);
-  doc.text(`Épargne de précaution : objectif ${Math.round(obj).toLocaleString('fr-FR')} € — ${pct} % atteint`,margin,y);
+  doc.text('Epargne de precaution : objectif '+fmtP(obj)+' - '+pct+' % atteint',margin,y);
 
   doc.save('budget_personnel_'+new Date().toISOString().slice(0,10)+'.pdf');
 }
