@@ -375,18 +375,23 @@ function exportPDF(){
   const canvasR=document.getElementById('chartR');
   const canvasD=document.getElementById('chartD');
   if(canvasR&&canvasD){
+    const size=300;
+    [canvasR,canvasD].forEach(c=>{c._ow=c.style.width;c._oh=c.style.height;c.style.width=size+'px';c.style.height=size+'px';});
+    chartR.resize();chartD.resize();
     const imgR=canvasR.toDataURL('image/png');
     const imgD=canvasD.toDataURL('image/png');
-    const cw=85,ch=cw-16;
+    [canvasR,canvasD].forEach(c=>{c.style.width=c._ow;c.style.height=c._oh;});
+    chartR.resize();chartD.resize();
+    const cw=85,cs=69;
     doc.setFillColor(248,248,248);
-    doc.roundedRect(margin,y,cw,ch+10,2,2,'F');
-    doc.roundedRect(margin+cw+10,y,cw,ch+10,2,2,'F');
+    doc.roundedRect(margin,y,cw,cs+10,2,2,'F');
+    doc.roundedRect(margin+cw+10,y,cw,cs+10,2,2,'F');
     doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(95,94,90);
     doc.text('Repartition des recettes',margin+4,y+5);
     doc.text('Repartition des depenses',margin+cw+14,y+5);
-    doc.addImage(imgR,'PNG',margin+8,y+8,ch,ch);
-    doc.addImage(imgD,'PNG',margin+cw+18,y+8,ch,ch);
-    y+=ch+18;
+    doc.addImage(imgR,'PNG',margin+8,y+8,cs,cs);
+    doc.addImage(imgD,'PNG',margin+cw+18,y+8,cs,cs);
+    y+=cs+18;
   }
 
   doc.autoTable({
