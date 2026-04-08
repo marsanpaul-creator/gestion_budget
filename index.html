@@ -377,16 +377,16 @@ function exportPDF(){
   if(canvasR&&canvasD){
     const imgR=canvasR.toDataURL('image/png');
     const imgD=canvasD.toDataURL('image/png');
-    const cw=85,ch=60;
+    const cw=85,ch=cw-16;
     doc.setFillColor(248,248,248);
-    doc.roundedRect(margin,y,cw,ch+8,2,2,'F');
-    doc.roundedRect(margin+cw+10,y,cw,ch+8,2,2,'F');
+    doc.roundedRect(margin,y,cw,ch+10,2,2,'F');
+    doc.roundedRect(margin+cw+10,y,cw,ch+10,2,2,'F');
     doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(95,94,90);
     doc.text('Repartition des recettes',margin+4,y+5);
     doc.text('Repartition des depenses',margin+cw+14,y+5);
-    doc.addImage(imgR,'PNG',margin+8,y+8,cw-16,ch);
-    doc.addImage(imgD,'PNG',margin+cw+18,y+8,cw-16,ch);
-    y+=ch+16;
+    doc.addImage(imgR,'PNG',margin+8,y+8,ch,ch);
+    doc.addImage(imgD,'PNG',margin+cw+18,y+8,ch,ch);
+    y+=ch+18;
   }
 
   doc.autoTable({
