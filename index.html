@@ -375,14 +375,21 @@ function exportPDF(){
   const canvasR=document.getElementById('chartR');
   const canvasD=document.getElementById('chartD');
   if(canvasR&&canvasD){
-    const size=300;
-    [canvasR,canvasD].forEach(c=>{c._ow=c.style.width;c._oh=c.style.height;c.style.width=size+'px';c.style.height=size+'px';});
-    chartR.resize();chartD.resize();
-    const imgR=canvasR.toDataURL('image/png');
-    const imgD=canvasD.toDataURL('image/png');
-    [canvasR,canvasD].forEach(c=>{c.style.width=c._ow;c.style.height=c._oh;});
-    chartR.resize();chartD.resize();
-    const cw=85,cs=69;
+    function squareCapture(src){
+      const size=400;
+      const tmp=document.createElement('canvas');
+      tmp.width=size;tmp.height=size;
+      const ctx=tmp.getContext('2d');
+      ctx.fillStyle='#f8f8f8';ctx.fillRect(0,0,size,size);
+      const sw=src.width,sh=src.height;
+      const scale=Math.min(size/sw,size/sh);
+      const ox=(size-sw*scale)/2,oy=(size-sh*scale)/2;
+      ctx.drawImage(src,ox,oy,sw*scale,sh*scale);
+      return tmp.toDataURL('image/png');
+    }
+    const imgR=squareCapture(canvasR);
+    const imgD=squareCapture(canvasD);
+    const cw=85,cs=70;
     doc.setFillColor(248,248,248);
     doc.roundedRect(margin,y,cw,cs+10,2,2,'F');
     doc.roundedRect(margin+cw+10,y,cw,cs+10,2,2,'F');
