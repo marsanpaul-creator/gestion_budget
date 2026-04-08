@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget personnel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f5f3;color:#1a1a18;min-height:100vh;padding:1.5rem}
+.w{max-width:820px;margin:0 auto}
+h1{font-size:22px;font-weight:500;margin-bottom:16px;color:#1a1a18}
+h2{font-size:18px;font-weight:500;color:#1a1a18;margin-bottom:12px}
+.section{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.sec-title{font-size:11px;font-weight:500;color:#5f5e5a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.row:last-child{border-bottom:none}
+.rl{flex:1;font-size:14px;color:#1a1a18}
+.rl input[type=text]{background:transparent;border:none;outline:none;width:100%;font-size:14px;color:#1a1a18;font-family:'Segoe UI',Arial,sans-serif}
+.rl input[type=text]::placeholder{color:#b4b2a9}
+.ai{width:110px;text-align:right;font-size:14px;border:0.5px solid rgba(0,0,0,0.15);border-radius:8px;padding:4px 8px;background:#f5f5f3;color:#1a1a18;font-family:'Segoe UI',Arial,sans-serif}
+.ai:focus{outline:none;border-color:rgba(0,0,0,0.35)}
+.ri{width:68px;text-align:right;font-size:14px;border:0.5px solid rgba(0,0,0,0.15);border-radius:8px;padding:4px 8px;background:#f5f5f3;color:#1a1a18;font-family:'Segoe UI',Arial,sans-serif}
+.ri:focus{outline:none;border-color:rgba(0,0,0,0.35)}
+.unit{font-size:12px;color:#5f5e5a;white-space:nowrap}
+.subtotal{display:flex;justify-content:space-between;align-items:center;padding:8px 0 0;margin-top:6px;border-top:0.5px solid rgba(0,0,0,0.18)}
+.stl{font-size:13px;color:#5f5e5a}
+.stv{font-size:15px;font-weight:500;color:#1a1a18}
+.add-btn{font-size:12px;color:#5f5e5a;background:none;border:0.5px dashed rgba(0,0,0,0.2);border-radius:8px;padding:4px 10px;cursor:pointer;margin-top:8px;font-family:'Segoe UI',Arial,sans-serif}
+.add-btn:hover{border-color:rgba(0,0,0,0.4);color:#1a1a18}
+.del{font-size:11px;color:#b4b2a9;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:8px}
+.del:hover{color:#a32d2d;background:#fcebeb}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.mc{background:#f1efe8;border-radius:8px;padding:12px 14px}
+.ml{font-size:12px;color:#5f5e5a;margin-bottom:4px}
+.mv{font-size:20px;font-weight:500}
+.mv.pos{color:#3b6d11}.mv.neg{color:#a32d2d}.mv.neu{color:#1a1a18}
+.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.chart-card{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:1rem}
+.chart-title{font-size:12px;color:#5f5e5a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:11px;color:#5f5e5a}
+.lsq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.ep-head{display:grid;grid-template-columns:1fr 100px 70px 85px;gap:8px;padding:0 0 6px;border-bottom:0.5px solid rgba(0,0,0,0.18);font-size:11px;color:#5f5e5a;text-transform:uppercase;letter-spacing:.04em}
+.ep-row{display:grid;grid-template-columns:1fr 100px 70px 85px;gap:8px;align-items:center;padding:6px 0;border-bottom:0.5px solid rgba(0,0,0,0.08);font-size:14px}
+.ep-row:last-child{border-bottom:none}
+.ep-lbl{color:#1a1a18;font-weight:500}
+.int{color:#3b6d11;font-weight:500;text-align:right}
+.prec-bar{background:#f1efe8;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.bw{height:8px;background:rgba(0,0,0,0.1);border-radius:4px;margin:8px 0 4px;overflow:hidden}
+.bf{height:100%;border-radius:4px;transition:width .3s}
+.bm{display:flex;justify-content:space-between;font-size:12px;color:#5f5e5a}
+.recap{display:flex;justify-content:space-between;align-items:center;padding:8px 0 0;border-top:0.5px solid rgba(0,0,0,0.18);margin-top:6px}
+.rcl{font-size:13px;color:#5f5e5a}
+.rcv{font-size:15px;font-weight:500}
+@media(max-width:560px){
+  .metrics{grid-template-columns:1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .ep-head,.ep-row{grid-template-columns:1fr 90px 60px 75px;gap:4px}
+  .ai{width:90px}.ri{width:55px}
+}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>Budget personnel</h1>
+
+<div class="metrics">
+  <div class="mc"><div class="ml">Recettes totales</div><div class="mv neu" id="m-r">0 €</div></div>
+  <div class="mc"><div class="ml">Dépenses totales</div><div class="mv neu" id="m-d">0 €</div></div>
+  <div class="mc"><div class="ml">Solde mensuel</div><div class="mv neu" id="m-s">0 €</div></div>
+</div>
+
+<div class="charts-grid">
+  <div class="chart-card">
+    <div class="chart-title">Répartition des recettes</div>
+    <div style="position:relative;height:180px"><canvas id="chartR" role="img" aria-label="Camembert des recettes">Répartition des recettes par catégorie.</canvas></div>
+    <div class="legend" id="legR"><span style="font-size:12px;color:#b4b2a9">Renseignez des montants</span></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Répartition des dépenses</div>
+    <div style="position:relative;height:180px"><canvas id="chartD" role="img" aria-label="Camembert des dépenses">Répartition des dépenses par catégorie.</canvas></div>
+    <div class="legend" id="legD"><span style="font-size:12px;color:#b4b2a9">Renseignez des montants</span></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Recettes</div>
+  <div id="rec-rows">
+    <div class="row" data-label="Salaire net (foyer)"><span class="rl">Salaire net (foyer)</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="rec"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Titres-restaurant"><span class="rl">Titres-restaurant</span><input class="ai" type="number" min="0" step="1" placeholder="0" data-cat="rec"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Revenus locatifs"><span class="rl">Revenus locatifs</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="rec"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Allocations (CAF…)"><span class="rl">Allocations (CAF…)</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="rec"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+  </div>
+  <button class="add-btn" onclick="addRow('rec-rows','rec','Autre recette')">+ Ajouter une recette</button>
+  <div class="subtotal"><span class="stl">Total recettes</span><span class="stv" id="sub-r">0 €</span></div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Dépenses essentielles</div>
+  <div id="ess-rows">
+    <div class="row" data-label="Loyer / crédit immobilier"><span class="rl">Loyer / crédit immobilier</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Courses alimentaires"><span class="rl">Courses alimentaires</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Assurances"><span class="rl">Assurances</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Énergie"><span class="rl">Énergie (EDF, gaz…)</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Transport"><span class="rl">Transport</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Santé / mutuelle"><span class="rl">Santé / mutuelle</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+  </div>
+  <button class="add-btn" onclick="addRow('ess-rows','dep','Autre dépense essentielle')">+ Ajouter une ligne</button>
+  <div class="subtotal"><span class="stl">Total essentielles</span><span class="stv" id="sub-e">0 €</span></div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Autres dépenses</div>
+  <div id="aut-rows">
+    <div class="row" data-label="Crédits consommation"><span class="rl">Crédits consommation</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Enfants"><span class="rl">Enfants (école, activités…)</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Loisirs"><span class="rl">Loisirs &amp; sorties</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+    <div class="row" data-label="Abonnements"><span class="rl">Abonnements (streaming…)</span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="dep"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button></div>
+  </div>
+  <button class="add-btn" onclick="addRow('aut-rows','dep','Autre dépense')">+ Ajouter une ligne</button>
+  <div class="subtotal"><span class="stl">Total autres</span><span class="stv" id="sub-a">0 €</span></div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Épargne de précaution</div>
+  <div class="prec-bar">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+      <span style="font-size:13px;color:#5f5e5a">Objectif : 6 mois de salaire net</span>
+      <span style="font-size:13px;font-weight:500;color:#1a1a18" id="prec-obj">0 €</span>
+    </div>
+    <div class="bw"><div class="bf" id="prec-bar" style="width:0%;background:#a32d2d"></div></div>
+    <div class="bm"><span id="prec-pct">0 % atteint</span><span id="prec-tot">Épargne totale : 0 €</span></div>
+  </div>
+
+  <div class="ep-head"><span>Livret</span><span style="text-align:right">Solde (€)</span><span style="text-align:right">Taux</span><span style="text-align:right">Intérêts/an</span></div>
+  <div id="ep-rows">
+    <div class="ep-row"><span class="ep-lbl">Livret A</span><input class="ai" type="number" min="0" step="100" placeholder="0" data-cat="ep" style="width:100%"><div style="display:flex;align-items:center;gap:2px"><input class="ri" type="number" min="0" step="0.05" value="1.7" data-cat="rate"><span class="unit">%</span></div><span class="int" data-int>0 €</span></div>
+    <div class="ep-row"><span class="ep-lbl">LDDS</span><input class="ai" type="number" min="0" step="100" placeholder="0" data-cat="ep" style="width:100%"><div style="display:flex;align-items:center;gap:2px"><input class="ri" type="number" min="0" step="0.05" value="1.7" data-cat="rate"><span class="unit">%</span></div><span class="int" data-int>0 €</span></div>
+    <div class="ep-row"><span class="ep-lbl">LEP</span><input class="ai" type="number" min="0" step="100" placeholder="0" data-cat="ep" style="width:100%"><div style="display:flex;align-items:center;gap:2px"><input class="ri" type="number" min="0" step="0.05" value="2.5" data-cat="rate"><span class="unit">%</span></div><span class="int" data-int>0 €</span></div>
+  </div>
+  <button class="add-btn" onclick="addEp()">+ Ajouter un livret</button>
+  <div class="recap"><span class="rcl">Total épargne</span><span class="rcv" id="rc-ep">0 €</span></div>
+  <div class="recap"><span class="rcl">Intérêts estimés (année N)</span><span class="rcv" style="color:#3b6d11" id="rc-int">0 €</span></div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const COLORS=['#378ADD','#1D9E75','#D85A30','#D4537E','#7F77DD','#BA7517','#639922','#888780','#E24B4A','#5DCAA5'];
+let chartR=null,chartD=null;
+
+function fmt(n){return Math.round(n).toLocaleString('fr-FR')+' €'}
+function gv(el){return parseFloat(el.value)||0}
+
+function getRowData(containerId){
+  const rows=[];
+  document.querySelectorAll('#'+containerId+' .row').forEach(row=>{
+    const lbl=row.dataset.label||row.querySelector('.rl input')?.value||'Ligne';
+    const val=gv(row.querySelector('[data-cat]'));
+    if(val>0)rows.push({label:lbl,value:val});
+  });
+  return rows;
+}
+
+function updateChart(chart,legendId,data){
+  const labels=data.map(d=>d.label);
+  const values=data.map(d=>d.value);
+  const total=values.reduce((a,b)=>a+b,0);
+  const colors=data.map((_,i)=>COLORS[i%COLORS.length]);
+  chart.data.labels=labels;
+  chart.data.datasets[0].data=values;
+  chart.data.datasets[0].backgroundColor=colors;
+  chart.update();
+  const leg=document.getElementById(legendId);
+  if(total===0){leg.innerHTML='<span style="font-size:12px;color:#b4b2a9">Renseignez des montants</span>';return;}
+  leg.innerHTML=data.map((d,i)=>`<span class="li"><span class="lsq" style="background:${colors[i]}"></span>${d.label} — ${Math.round(d.value/total*100)}%</span>`).join('');
+}
+
+function initCharts(){
+  const cfg=()=>({type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:[],borderWidth:2,borderColor:'#f5f5f3'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.parsed)}}}}});
+  chartR=new Chart(document.getElementById('chartR'),cfg());
+  chartD=new Chart(document.getElementById('chartD'),cfg());
+}
+
+function calc(){
+  let recTotal=0,essTotal=0,autTotal=0;
+  document.querySelectorAll('#rec-rows [data-cat="rec"]').forEach(i=>recTotal+=gv(i));
+  document.querySelectorAll('#ess-rows [data-cat="dep"]').forEach(i=>essTotal+=gv(i));
+  document.querySelectorAll('#aut-rows [data-cat="dep"]').forEach(i=>autTotal+=gv(i));
+  const depTotal=essTotal+autTotal;
+  const solde=recTotal-depTotal;
+
+  document.getElementById('sub-r').textContent=fmt(recTotal);
+  document.getElementById('sub-e').textContent=fmt(essTotal);
+  document.getElementById('sub-a').textContent=fmt(autTotal);
+  document.getElementById('m-r').textContent=fmt(recTotal);
+  document.getElementById('m-d').textContent=fmt(depTotal);
+  const ms=document.getElementById('m-s');
+  ms.textContent=fmt(solde);ms.className='mv '+(solde>=0?'pos':'neg');
+
+  const salaire=gv(document.querySelector('#rec-rows [data-cat="rec"]'));
+  const obj=salaire*6;
+  document.getElementById('prec-obj').textContent=fmt(obj);
+
+  let epTotal=0,intTotal=0;
+  document.querySelectorAll('#ep-rows .ep-row').forEach(row=>{
+    const s=gv(row.querySelector('[data-cat="ep"]'));
+    const r=gv(row.querySelector('[data-cat="rate"]'));
+    const interest=s*(r/100);
+    epTotal+=s;intTotal+=interest;
+    const el=row.querySelector('[data-int]');
+    if(el)el.textContent=fmt(interest);
+  });
+  document.getElementById('rc-ep').textContent=fmt(epTotal);
+  document.getElementById('rc-int').textContent=fmt(intTotal);
+  document.getElementById('prec-tot').textContent='Épargne totale : '+fmt(epTotal);
+  const pct=obj>0?Math.min(epTotal/obj*100,100):0;
+  const bar=document.getElementById('prec-bar');
+  bar.style.width=pct.toFixed(1)+'%';
+  bar.style.background=pct>=100?'#3b6d11':pct>=50?'#ba7517':'#a32d2d';
+  document.getElementById('prec-pct').textContent=Math.round(pct)+' % atteint';
+
+  const rData=getRowData('rec-rows');
+  const dData=[];
+  document.querySelectorAll('#ess-rows .row,#aut-rows .row').forEach(row=>{
+    const lbl=row.dataset.label||row.querySelector('.rl input')?.value||'Ligne';
+    const val=gv(row.querySelector('[data-cat]'));
+    if(val>0)dData.push({label:lbl,value:val});
+  });
+
+  updateChart(chartR,'legR',rData);
+  updateChart(chartD,'legD',dData);
+}
+
+function addRow(cid,cat,ph){
+  const c=document.getElementById(cid);
+  const div=document.createElement('div');div.className='row';
+  div.innerHTML=`<span class="rl"><input type="text" placeholder="${ph}" oninput="this.closest('.row').dataset.label=this.value;calc()"></span><input class="ai" type="number" min="0" step="10" placeholder="0" data-cat="${cat}"><span class="unit">€/mois</span><button class="del" onclick="delRow(this)">✕</button>`;
+  c.appendChild(div);
+  div.querySelector('[data-cat]').addEventListener('input',calc);
+}
+
+function addEp(){
+  const c=document.getElementById('ep-rows');
+  const div=document.createElement('div');div.className='ep-row';
+  div.innerHTML=`<span class="ep-lbl"><input type="text" placeholder="Nom du livret" style="background:transparent;border:none;outline:none;width:100%;font-size:14px;color:#1a1a18;font-family:'Segoe UI',Arial,sans-serif"></span><input class="ai" type="number" min="0" step="100" placeholder="0" data-cat="ep" style="width:100%"><div style="display:flex;align-items:center;gap:2px"><input class="ri" type="number" min="0" step="0.05" value="2" data-cat="rate"><span class="unit">%</span></div><span class="int" data-int>0 €</span>`;
+  c.appendChild(div);
+  div.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
+}
+
+function delRow(btn){btn.closest('.row,.ep-row').remove();calc()}
+
+document.querySelectorAll('input[type=number]').forEach(i=>i.addEventListener('input',calc));
+initCharts();calc();
+</script>
+</body>
+</html>
