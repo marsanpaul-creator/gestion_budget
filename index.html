@@ -377,24 +377,26 @@ function exportPDF(){
   if(canvasR&&canvasD){
     const imgR=canvasR.toDataURL('image/png');
     const imgD=canvasD.toDataURL('image/png');
-    const cw=85,ch=55;
-    doc.setFillColor(255,255,255);
-    doc.roundedRect(margin,y,cw,ch+10,2,2,'F');
-    doc.roundedRect(margin+cw+10,y,cw,ch+10,2,2,'F');
+    const cw=85,ch=60;
+    doc.setFillColor(248,248,248);
+    doc.roundedRect(margin,y,cw,ch+8,2,2,'F');
+    doc.roundedRect(margin+cw+10,y,cw,ch+8,2,2,'F');
     doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(95,94,90);
     doc.text('Repartition des recettes',margin+4,y+5);
     doc.text('Repartition des depenses',margin+cw+14,y+5);
-    doc.addImage(imgR,'PNG',margin+5,y+7,cw-10,ch);
-    doc.addImage(imgD,'PNG',margin+cw+15,y+7,cw-10,ch);
-    y+=ch+18;
+    doc.addImage(imgR,'PNG',margin+8,y+8,cw-16,ch);
+    doc.addImage(imgD,'PNG',margin+cw+18,y+8,cw-16,ch);
+    y+=ch+16;
   }
 
   doc.autoTable({
+    startY:y,margin:{left:margin,right:margin},
+    head:[['Recettes','Montant mensuel']],
     body:[...d.rec.map(r=>[r.label,fmtP(r.value)]),['Total recettes',fmtP(d.recTotal)]],
     headStyles:{fillColor:[55,138,221],textColor:255,fontStyle:'bold',fontSize:9},
     bodyStyles:{fontSize:9},
     alternateRowStyles:{fillColor:[240,248,255]},
-    foot:[],styles:{cellPadding:3}
+    styles:{cellPadding:3}
   });
   y=doc.lastAutoTable.finalY+8;
 
